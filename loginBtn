@@ -1,0 +1,60 @@
+import 'package:flutter/material.dart';
+import '../services/auth_service.dart'; // AuthService をインポート
+
+...
+
+ElevatedButton(
+  onPressed: () async {
+    final storeCode = _storeCodeController.text;
+    final customerCode = _customerCodeController.text;
+    final password = _passwordController.text;
+
+    try {
+      final response = await AuthService.login(
+        storeCode: storeCode,
+        customerCode: customerCode,
+        password: password,
+      );
+
+      if (response.statusCode == 200) {
+        // レスポンスの内容をログに出す（必要に応じて解析）
+        print('レスポンス: ${response.body}');
+
+        // ログイン成功時の処理（例: ホーム画面へ遷移）
+        Navigator.pushReplacementNamed(context, '/home');
+
+      } else {
+        // エラー応答
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('ログイン失敗'),
+            content: Text('ステータスコード: ${response.statusCode}'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('OK'),
+              )
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      // 通信エラーなど
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('エラー'),
+          content: Text('通信に失敗しました。\n$e'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            )
+          ],
+        ),
+      );
+    }
+  },
+  child: Text('ログイン'),
+),
