@@ -1,27 +1,31 @@
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class AuthService {
-  static Future<Map<String, dynamic>> login({
+  static Future<http.Response> login({
     required String storeCode,
     required String customerCode,
     required String password,
   }) async {
-    final uri = Uri.parse('https://example.com/login.jsp').replace(queryParameters: {
+    final uri = Uri.parse('https://example.com/login/xxx/exec');
+
+    final headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
+
+    final body = {
       'storeCode': storeCode,
       'customerCode': customerCode,
       'password': password,
-    });
+    };
 
     try {
-      final response = await http.get(uri);
+      final response = await http.post(
+        uri,
+        headers: headers,
+        body: body, // フォーム形式で送信
+      );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data;
-      } else {
-        throw Exception('HTTPエラー: ${response.statusCode}');
-      }
+      return response;
     } catch (e) {
       throw Exception('通信エラー: $e');
     }
