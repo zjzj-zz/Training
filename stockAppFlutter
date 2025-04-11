@@ -1,0 +1,62 @@
+// lib/main.dart import 'package:flutter/material.dart'; import 'screens/splash_screen.dart';
+
+void main() { runApp(const MyApp()); }
+
+class MyApp extends StatelessWidget { const MyApp({super.key});
+
+@override Widget build(BuildContext context) { return MaterialApp( title: '株取引アプリ', theme: ThemeData(primarySwatch: Colors.blue), home: const SplashScreen(), ); } }
+
+// lib/screens/splash_screen.dart import 'package:flutter/material.dart'; import 'dart:async'; import 'login_screen.dart';
+
+class SplashScreen extends StatefulWidget { const SplashScreen({super.key}); @override State<SplashScreen> createState() => _SplashScreenState(); }
+
+class SplashScreenState extends State<SplashScreen> { @override void initState() { super.initState(); Timer(const Duration(seconds: 2), () { Navigator.pushReplacement( context, MaterialPageRoute(builder: () => const LoginScreen()), ); }); }
+
+@override Widget build(BuildContext context) { return const Scaffold( body: Center( child: Text('株取引アプリ', style: TextStyle(fontSize: 24)), ), ); } }
+
+// lib/screens/login_screen.dart import 'package:flutter/material.dart'; import 'main_screen.dart';
+
+class LoginScreen extends StatefulWidget { const LoginScreen({super.key}); @override State<LoginScreen> createState() => _LoginScreenState(); }
+
+class _LoginScreenState extends State<LoginScreen> { final _formKey = GlobalKey<FormState>(); final _storeController = TextEditingController(); final _customerController = TextEditingController(); final _passwordController = TextEditingController();
+
+@override void dispose() { _storeController.dispose(); _customerController.dispose(); _passwordController.dispose(); super.dispose(); }
+
+void _login() { if (formKey.currentState!.validate()) { Navigator.pushReplacement( context, MaterialPageRoute(builder: () => const MainScreen()), ); } }
+
+@override Widget build(BuildContext context) { return Scaffold( appBar: AppBar(title: const Text('ログイン')), body: Padding( padding: const EdgeInsets.all(16.0), child: Form( key: _formKey, child: Column( children: [ TextFormField( controller: _storeController, decoration: const InputDecoration(labelText: '店舗番号（3桁）'), keyboardType: TextInputType.number, maxLength: 3, validator: (value) { if (value == null || value.isEmpty) { return '店舗番号を入力してください'; } else if (!RegExp(r'^\d{3}$').hasMatch(value)) { return '3桁の数字で入力してください'; } return null; }, ), TextFormField( controller: _customerController, decoration: const InputDecoration(labelText: '顧客コード（最大6桁）'), keyboardType: TextInputType.number, maxLength: 6, validator: (value) { if (value == null || value.isEmpty) { return '顧客コードを入力してください'; } else if (!RegExp(r'^\d{1,6}$').hasMatch(value)) { return '1〜6桁の数字で入力してください'; } return null; }, ), TextFormField( controller: _passwordController, decoration: const InputDecoration(labelText: 'パスワード（英数字16桁以内）'), obscureText: true, maxLength: 16, validator: (value) { if (value == null || value.isEmpty) { return 'パスワードを入力してください'; } else if (!RegExp(r'^[a-zA-Z0-9]{1,16}$').hasMatch(value)) { return '英数字16桁以内で入力してください'; } return null; }, ), const SizedBox(height: 20), ElevatedButton( onPressed: _login, child: const Text('ログイン'), ), ], ), ), ), ); } }
+
+// lib/screens/main_screen.dart import 'package:flutter/material.dart'; import '../pages/home_page.dart'; import '../pages/trade_page.dart'; import '../pages/search_page.dart'; import '../pages/settings_page.dart';
+
+class MainScreen extends StatefulWidget { const MainScreen({super.key}); @override State<MainScreen> createState() => _MainScreenState(); }
+
+class _MainScreenState extends State<MainScreen> { int _currentIndex = 0;
+
+final List<Widget> _pages = const [ HomePage(), TradePage(), SearchPage(), SettingsPage(), ];
+
+@override Widget build(BuildContext context) { return Scaffold( body: _pages[_currentIndex], bottomNavigationBar: BottomNavigationBar( currentIndex: _currentIndex, type: BottomNavigationBarType.fixed, onTap: (index) => setState(() => _currentIndex = index), items: const [ BottomNavigationBarItem(icon: Icon(Icons.home), label: 'ホーム'), BottomNavigationBarItem(icon: Icon(Icons.swap_horiz), label: '取引'), BottomNavigationBarItem(icon: Icon(Icons.search), label: '検索'), BottomNavigationBarItem(icon: Icon(Icons.settings), label: '設定'), ], ), ); } }
+
+// lib/pages/home_page.dart import 'package:flutter/material.dart';
+
+class HomePage extends StatelessWidget { const HomePage({super.key});
+
+@override Widget build(BuildContext context) { return const Scaffold( body: Center(child: Text('ホーム')), ); } }
+
+// lib/pages/trade_page.dart import 'package:flutter/material.dart';
+
+class TradePage extends StatelessWidget { const TradePage({super.key});
+
+@override Widget build(BuildContext context) { return const Scaffold( body: Center(child: Text('取引')), ); } }
+
+// lib/pages/search_page.dart import 'package:flutter/material.dart';
+
+class SearchPage extends StatelessWidget { const SearchPage({super.key});
+
+@override Widget build(BuildContext context) { return const Scaffold( body: Center(child: Text('検索')), ); } }
+
+// lib/pages/settings_page.dart import 'package:flutter/material.dart';
+
+class SettingsPage extends StatelessWidget { const SettingsPage({super.key});
+
+@override Widget build(BuildContext context) { return const Scaffold( body: Center(child: Text('設定')), ); } }
+
