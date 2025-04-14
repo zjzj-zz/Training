@@ -1,0 +1,30 @@
+import 'dart:convert';
+import 'dart:io';
+
+class ApiService {
+  Future<String> login({
+    required String storeCode,
+    required String customerCode,
+    required String password,
+  }) async {
+    final uri = Uri.parse('https://your-dev-server/login/exec');
+
+    final client = HttpClient()
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+
+    final request = await client.postUrl(uri);
+    request.headers.contentType =
+        ContentType('application', 'x-www-form-urlencoded');
+    request.write('storeCode=$storeCode&customerCode=$customerCode&password=$password');
+
+    final response = await request.close();
+
+    if (response.statusCode == 200) {
+      final responseBody = await response.transform(utf8.decoder).join();
+      return responseBody;
+    } else {
+      throw Exception('ログイン失敗: ${response.statusCode}');
+    }
+  }
+}
