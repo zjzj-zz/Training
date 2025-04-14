@@ -37,3 +37,152 @@ class TradeHomeScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+import 'package:flutter/material.dart';
+import 'trade_type.dart';
+
+class TradeEntryScreen extends StatefulWidget {
+  final TradeType tradeType;
+
+  const TradeEntryScreen({super.key, required this.tradeType});
+
+  @override
+  State<TradeEntryScreen> createState() => _TradeEntryScreenState();
+}
+
+class _TradeEntryScreenState extends State<TradeEntryScreen> {
+  int quantity = 100;
+  int price = 2200;
+  String orderType = '指値';
+  String condition = '当日中';
+  final passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final isBuy = widget.tradeType == TradeType.buy;
+
+    return Scaffold(
+      appBar: AppBar(title: Text(isBuy ? '買い注文' : '売り注文')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('[銘柄名] 7203 トヨタ自動車', style: TextStyle(fontSize: 18)),
+            const SizedBox(height: 16),
+            const Text('[価格情報]', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text('現在値：2,200円'),
+            const Text('前日比：+30円（+1.38%）'),
+            const SizedBox(height: 24),
+            const Text('[取引フォーム]', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+
+            // 数量
+            Row(
+              children: [
+                const Text('数量'),
+                const SizedBox(width: 16),
+                IconButton(
+                  icon: const Icon(Icons.remove),
+                  onPressed: () => setState(() {
+                    if (quantity > 100) quantity -= 100;
+                  }),
+                ),
+                Text('$quantity株'),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () => setState(() {
+                    quantity += 100;
+                  }),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // 価格
+            Row(
+              children: [
+                const Text('価格'),
+                const SizedBox(width: 16),
+                DropdownButton<String>(
+                  value: orderType,
+                  items: ['指値', '成行'].map((e) {
+                    return DropdownMenuItem(value: e, child: Text(e));
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => orderType = value);
+                    }
+                  },
+                ),
+                const SizedBox(width: 16),
+                Text('$price円'),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // 取引種別
+            Row(
+              children: [
+                const Text('取引種別'),
+                const SizedBox(width: 16),
+                ToggleButtons(
+                  isSelected: [isBuy, !isBuy],
+                  children: const [Text('買い'), Text('売り')],
+                  onPressed: (_) {},
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // 執行条件
+            Row(
+              children: [
+                const Text('執行条件'),
+                const SizedBox(width: 16),
+                DropdownButton<String>(
+                  value: condition,
+                  items: ['当日中', '期間指定'].map((e) {
+                    return DropdownMenuItem(value: e, child: Text(e));
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => condition = value);
+                    }
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // 暗証番号
+            TextField(
+              controller: passwordController,
+              decoration: const InputDecoration(
+                labelText: '取引暗証番号',
+                hintText: '********',
+              ),
+              obscureText: true,
+              keyboardType: TextInputType.number,
+            ),
+
+            const SizedBox(height: 24),
+            Center(
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // TODO: 注文確認画面へ遷移処理
+                },
+                icon: const Icon(Icons.check_circle),
+                label: const Text('注文確認へ'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
