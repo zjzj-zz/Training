@@ -1,0 +1,63 @@
+import 'package:flutter/material.dart';
+import 'trade_entry_screen.dart';
+import 'trade_type.dart';
+
+class TradeHomeScreen extends StatelessWidget {
+  const TradeHomeScreen({super.key});
+
+  void _navigateToEntry(BuildContext context, TradeType type) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TradeEntryScreen(tradeType: type),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('取引メニュー')),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _tradeButton(
+                label: '買い',
+                color: Colors.red,
+                onPressed: () => _navigateToEntry(context, TradeType.buy),
+              ),
+              _tradeButton(
+                label: '売り',
+                color: Colors.blue,
+                onPressed: () => _navigateToEntry(context, TradeType.sell),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _tradeButton({
+    required String label,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        textStyle: const TextStyle(fontSize: 20),
+      ),
+      onPressed: onPressed,
+      child: Text(label),
+    );
+  }
+}
