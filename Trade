@@ -1,0 +1,39 @@
+import 'package:flutter/material.dart';
+import 'trade_entry_screen.dart';
+import 'trade_type.dart';
+
+class TradeHomeScreen extends StatelessWidget {
+  const TradeHomeScreen({super.key});
+
+  void _navigateToTrade(BuildContext context, TradeType type) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TradeEntryScreen(tradeType: type),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('現物取引')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () => _navigateToTrade(context, TradeType.buy),
+              child: const Text('買い'),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => _navigateToTrade(context, TradeType.sell),
+              child: const Text('売り'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
