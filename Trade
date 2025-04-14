@@ -186,3 +186,13 @@ class _TradeEntryScreenState extends State<TradeEntryScreen> {
     );
   }
 }
+
+
+// 取引種別
+Row(
+  children: [
+    const Text('取引種別'),
+    const SizedBox(width: 16),
+    Text(isBuy ? '買い' : '売り', style: const TextStyle(fontWeight: FontWeight.bold)),
+  ],
+),
