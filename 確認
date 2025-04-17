@@ -1,0 +1,87 @@
+import 'package:flutter/material.dart';
+
+class TradeConfirmScreen extends StatefulWidget {
+  final Map<String, dynamic> orderInfo; // 前の画面から受け取る情報
+
+  const TradeConfirmScreen({Key? key, required this.orderInfo}) : super(key: key);
+
+  @override
+  State<TradeConfirmScreen> createState() => _TradeConfirmScreenState();
+}
+
+class _TradeConfirmScreenState extends State<TradeConfirmScreen> {
+  final _passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final info = widget.orderInfo;
+    final int quantity = info['quantity'];
+    final int price = info['price'];
+    final int amount = quantity * price;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('注文確認')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildRow('銘柄', '${info['stockName']} (${info['stockCode']})'),
+            _buildRow('売買', info['orderType']),
+            _buildRow('市場', info['market']),
+            _buildRow('注文数量', '$quantity 株'),
+            _buildRow('注文単価', '$price 円'),
+            _buildRow('概算金額', '$amount 円'),
+            _buildRow('有効期間', info['validTerm']),
+            const SizedBox(height: 16),
+            const Text('取引暗証番号'),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'パスワードを入力',
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _onSubmit,
+                child: const Text('注文を実行'),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(value),
+        ],
+      ),
+    );
+  }
+
+  void _onSubmit() {
+    final password = _passwordController.text;
+    if (password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('パスワードを入力してください')),
+      );
+      return;
+    }
+
+    // TODO: 注文実行API呼び出し
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('注文を実行しました（仮）')),
+    );
+  }
+}
