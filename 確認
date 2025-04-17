@@ -85,3 +85,24 @@ class _TradeConfirmScreenState extends State<TradeConfirmScreen> {
     );
   }
 }
+
+
+void _onSubmit() {
+  final password = _passwordController.text;
+  if (password.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('パスワードを入力してください')),
+    );
+    return;
+  }
+
+  // TODO: APIリクエスト処理を挟む
+
+  // 注文完了画面に遷移
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const TradeCompleteScreen(),
+    ),
+  );
+}
