@@ -23,9 +23,9 @@ class CustomInputField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ラベル＋ヘルプマーク（右寄せ）
+        // ラベル＋ヘルプマーク（左寄せ）
         Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               labelText,
@@ -37,17 +37,19 @@ class CustomInputField extends StatelessWidget {
               child: Container(
                 width: 18,
                 height: 18,
-                decoration: const BoxDecoration(
-                  color: Colors.red,
+                decoration: BoxDecoration(
+                  color: Colors.white,
                   shape: BoxShape.circle,
+                  border: Border.all(color: Colors.red, width: 1.5),
                 ),
                 alignment: Alignment.center,
                 child: const Text(
                   '?',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.red,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
+                    height: 1,
                   ),
                 ),
               ),
@@ -75,13 +77,15 @@ class CustomInputField extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 8),
-            // 保存チェックボックスとラベル
+            const SizedBox(width: 4),
+            // 保存チェックとラベル（近づけて配置）
             Column(
               children: [
                 Checkbox(
                   value: isSaved,
                   onChanged: onSaveToggled,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4),
                   ),
