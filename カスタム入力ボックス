@@ -1,0 +1,68 @@
+import 'package:flutter/material.dart';
+
+class CustomInputField extends StatelessWidget {
+  final String labelText;
+  final String hintText;
+  final VoidCallback onHelpPressed;
+  final VoidCallback onSavePressed;
+  final TextEditingController controller;
+
+  const CustomInputField({
+    super.key,
+    required this.labelText,
+    required this.hintText,
+    required this.onHelpPressed,
+    required this.onSavePressed,
+    required this.controller,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text(
+              labelText,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(width: 4),
+            IconButton(
+              icon: const Icon(Icons.help, color: Colors.red, size: 18),
+              onPressed: onHelpPressed,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  decoration: InputDecoration(
+                    hintText: hintText,
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.save),
+                onPressed: onSavePressed,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
