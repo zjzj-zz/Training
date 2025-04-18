@@ -4,7 +4,8 @@ class CustomInputField extends StatelessWidget {
   final String labelText;
   final String hintText;
   final VoidCallback onHelpPressed;
-  final VoidCallback onSavePressed;
+  final ValueChanged<bool?> onSaveToggled;
+  final bool isSaved;
   final TextEditingController controller;
 
   const CustomInputField({
@@ -12,7 +13,8 @@ class CustomInputField extends StatelessWidget {
     required this.labelText,
     required this.hintText,
     required this.onHelpPressed,
-    required this.onSavePressed,
+    required this.onSaveToggled,
+    required this.isSaved,
     required this.controller,
   });
 
@@ -21,6 +23,7 @@ class CustomInputField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // ラベル＋ヘルプマーク（右寄せ）
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -29,24 +32,40 @@ class CustomInputField extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(width: 4),
-            IconButton(
-              icon: const Icon(Icons.help, color: Colors.red, size: 18),
-              onPressed: onHelpPressed,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
+            GestureDetector(
+              onTap: onHelpPressed,
+              child: Container(
+                width: 18,
+                height: 18,
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: const Text(
+                  '?',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
         const SizedBox(height: 4),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
-            children: [
-              Expanded(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 入力ボックス
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: TextField(
                   controller: controller,
                   decoration: InputDecoration(
@@ -55,12 +74,22 @@ class CustomInputField extends StatelessWidget {
                   ),
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.save),
-                onPressed: onSavePressed,
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 8),
+            // 保存チェックボックスとラベル
+            Column(
+              children: [
+                Checkbox(
+                  value: isSaved,
+                  onChanged: onSaveToggled,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const Text('保存', style: TextStyle(fontSize: 12)),
+              ],
+            ),
+          ],
         ),
       ],
     );
