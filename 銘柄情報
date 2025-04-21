@@ -87,3 +87,72 @@ class StockInfoTile extends StatelessWidget {
     );
   }
 }
+
+
+
+class StockInfoTile extends StatelessWidget {
+  final String name;
+  final String code;
+  final String exchange;
+  final String price;
+  final String change;
+  final String percent;
+  final String time;
+
+  const StockInfoTile({
+    super.key,
+    required this.name,
+    required this.code,
+    required this.exchange,
+    required this.price,
+    required this.change,
+    required this.percent,
+    required this.time,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          // 左側（5割）
+          Expanded(
+            flex: 5,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name, style: Theme.of(context).textTheme.titleMedium, overflow: TextOverflow.ellipsis),
+                Text('$code・$exchange', style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
+          ),
+
+          // 中央（3割）
+          Expanded(
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(price, style: Theme.of(context).textTheme.titleLarge),
+                Text(time, style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
+          ),
+
+          // 右側（2割）
+          Expanded(
+            flex: 2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(change, style: Theme.of(context).textTheme.bodyMedium),
+                Text(percent, style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
