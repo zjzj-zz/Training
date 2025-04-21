@@ -1,0 +1,65 @@
+class CommonTabBar extends StatefulWidget {
+  final List<String> tabs;
+  final ValueChanged<int> onTabSelected;
+  final int initialIndex;
+
+  const CommonTabBar({
+    super.key,
+    required this.tabs,
+    required this.onTabSelected,
+    this.initialIndex = 0,
+  });
+
+  @override
+  State<CommonTabBar> createState() => _CommonTabBarState();
+}
+
+class _CommonTabBarState extends State<CommonTabBar> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(
+      length: widget.tabs.length,
+      vsync: this,
+      initialIndex: widget.initialIndex,
+    );
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        widget.onTabSelected(_tabController.index);
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(CommonTabBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.tabs.length != widget.tabs.length) {
+      _tabController.dispose();
+      _tabController = TabController(
+        length: widget.tabs.length,
+        vsync: this,
+        initialIndex: widget.initialIndex,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TabBar(
+      controller: _tabController,
+      isScrollable: true,
+      indicatorColor: Colors.red,
+      labelColor: Colors.red,
+      unselectedLabelColor: Colors.grey,
+      tabs: widget.tabs.map((label) => Tab(text: label)).toList(),
+    );
+  }
+}
