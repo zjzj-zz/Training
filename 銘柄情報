@@ -1,0 +1,89 @@
+import 'package:flutter/material.dart';
+
+class StockInfoTile extends StatelessWidget {
+  final String stockName;
+  final String stockCodeExchange;
+  final String price;
+  final String priceTime;
+  final String diff;
+  final String diffRate;
+
+  const StockInfoTile({
+    super.key,
+    required this.stockName,
+    required this.stockCodeExchange,
+    required this.price,
+    required this.priceTime,
+    required this.diff,
+    required this.diffRate,
+  });
+
+  // 差分の文字列から色を決定する
+  Color _getDiffColor(String value) {
+    if (value.contains('+')) {
+      return Colors.red;
+    } else if (value.contains('-')) {
+      return Colors.blue;
+    } else {
+      return Colors.black;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final diffColor = _getDiffColor(diff);
+
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 左：銘柄名・コード
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                stockName,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                stockCodeExchange,
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+            ],
+          ),
+          const Spacer(),
+          // 中央：現在値・時刻
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                price,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                priceTime,
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+            ],
+          ),
+          const SizedBox(width: 16),
+          // 右：前日比・比率（色付き）
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                diff,
+                style: TextStyle(fontSize: 16, color: diffColor),
+              ),
+              Text(
+                diffRate,
+                style: TextStyle(fontSize: 14, color: diffColor),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
