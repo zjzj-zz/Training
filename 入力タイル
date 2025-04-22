@@ -1,0 +1,39 @@
+import 'package:flutter/material.dart';
+
+class OrderInputTile extends StatelessWidget {
+  final String label;
+  final Widget inputWidget;
+  final double leftFlexRatio;
+  final double rightFlexRatio;
+
+  const OrderInputTile({
+    super.key,
+    required this.label,
+    required this.inputWidget,
+    this.leftFlexRatio = 3,
+    this.rightFlexRatio = 7,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            flex: leftFlexRatio.toInt(),
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+          ),
+          Expanded(
+            flex: rightFlexRatio.toInt(),
+            child: inputWidget,
+          ),
+        ],
+      ),
+    );
+  }
+}
