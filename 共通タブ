@@ -130,3 +130,45 @@ class _SelectableTabBarState extends State<SelectableTabBar> {
     );
   }
 }
+
+@override
+Widget build(BuildContext context) {
+  return Container(
+    color: Colors.grey[200], // ← ここでライトグレー背景を設定
+    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4), // 任意でパディング
+    child: Row(
+      children: widget.tabs.asMap().entries.map((entry) {
+        final index = entry.key;
+        final label = entry.value;
+        final isSelected = index == _selectedIndex;
+
+        return Expanded(
+          child: GestureDetector(
+            onTap: () => _onTap(index),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.red : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+                border: isSelected
+                    ? Border.all(color: Colors.red)
+                    : Border.all(color: Colors.transparent),
+              ),
+              child: Center(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : Colors.red,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    ),
+  );
+}
