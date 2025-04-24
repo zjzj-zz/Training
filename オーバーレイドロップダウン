@@ -1,0 +1,102 @@
+import 'package:flutter/material.dart';
+
+class OverlayDropdown extends StatefulWidget {
+  final List<String> items;
+  final String selected;
+  final ValueChanged<String> onChanged;
+
+  const OverlayDropdown({
+    super.key,
+    required this.items,
+    required this.selected,
+    required this.onChanged,
+  });
+
+  @override
+  State<OverlayDropdown> createState() => _OverlayDropdownState();
+}
+
+class _OverlayDropdownState extends State<OverlayDropdown> {
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry? _overlayEntry;
+
+  void _toggleDropdown() {
+    if (_overlayEntry == null) {
+      _showOverlay();
+    } else {
+      _removeOverlay();
+    }
+  }
+
+  void _showOverlay() {
+    final overlay = Overlay.of(context);
+    final renderBox = context.findRenderObject() as RenderBox;
+    final size = renderBox.size;
+    final offset = renderBox.localToGlobal(Offset.zero);
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        width: size.width,
+        child: CompositedTransformFollower(
+          link: _layerLink,
+          showWhenUnlinked: false,
+          offset: Offset(0.0, size.height + 5),
+          child: Material(
+            elevation: 4,
+            borderRadius: BorderRadius.circular(12),
+            color: Colors.grey[200],
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: widget.items.map((item) {
+                return ListTile(
+                  title: Text(item),
+                  onTap: () {
+                    widget.onChanged(item);
+                    _removeOverlay();
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlay.insert(_overlayEntry!);
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
+  @override
+  void dispose() {
+    _removeOverlay();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: GestureDetector(
+        onTap: _toggleDropdown,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(widget.selected),
+              const Icon(Icons.keyboard_arrow_down, color: Colors.black),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
