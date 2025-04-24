@@ -1,0 +1,43 @@
+import 'package:flutter/material.dart';
+
+class CommonDropdown<T> extends StatelessWidget {
+  final T value;
+  final List<T> items;
+  final ValueChanged<T?> onChanged;
+  final String Function(T) itemLabel;
+
+  const CommonDropdown({
+    super.key,
+    required this.value,
+    required this.items,
+    required this.onChanged,
+    required this.itemLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<T>(
+          isExpanded: true,
+          value: value,
+          icon: const Icon(Icons.keyboard_arrow_down),
+          borderRadius: BorderRadius.circular(12), // ← 選択肢表示の背景角丸
+          dropdownColor: Colors.grey[200], // ← 選択肢の背景色
+          onChanged: onChanged,
+          items: items.map((T item) {
+            return DropdownMenuItem<T>(
+              value: item,
+              child: Text(itemLabel(item)),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+}
