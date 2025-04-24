@@ -1,82 +1,3 @@
-class CustomDropdown extends StatefulWidget {
-  final List<String> items;
-
-  const CustomDropdown({super.key, required this.items});
-
-  @override
-  State<CustomDropdown> createState() => _CustomDropdownState();
-}
-
-class _CustomDropdownState extends State<CustomDropdown> {
-  String? selectedItem;
-  bool showOptions = false;
-
-  @override
-  void initState() {
-    selectedItem = widget.items.first;
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              showOptions = !showOptions;
-            });
-          },
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(selectedItem ?? ''),
-                Icon(showOptions
-                    ? Icons.keyboard_arrow_up
-                    : Icons.keyboard_arrow_down),
-              ],
-            ),
-          ),
-        ),
-        if (showOptions)
-          Column(
-            children: widget.items.map((item) {
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedItem = item;
-                    showOptions = false;
-                  });
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10, horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                      bottom: BorderSide(color: Colors.grey[300]!),
-                    ),
-                  ),
-                  child: Text(item),
-                ),
-              );
-            }).toList(),
-          ),
-      ],
-    );
-  }
-}
-
-
 import 'package:flutter/material.dart';
 
 class CustomDropdown extends StatefulWidget {
@@ -90,22 +11,8 @@ class CustomDropdown extends StatefulWidget {
 
 class _CustomDropdownState extends State<CustomDropdown> {
   String? selectedItem;
-  bool showOptions = false;
   final GlobalKey _key = GlobalKey();
-  Offset _offset = Offset.zero;
-  double _width = 0;
-
-  void _toggleDropdown() {
-    final renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox != null) {
-      final position = renderBox.localToGlobal(Offset.zero);
-      setState(() {
-        _offset = position;
-        _width = renderBox.size.width;
-        showOptions = !showOptions;
-      });
-    }
-  }
+  OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
@@ -113,65 +20,84 @@ class _CustomDropdownState extends State<CustomDropdown> {
     selectedItem = widget.items.first;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        GestureDetector(
-          key: _key,
-          onTap: _toggleDropdown,
+  void _showOverlay() {
+    final renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
+    final offset = renderBox?.localToGlobal(Offset.zero);
+    final size = renderBox?.size;
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        left: offset?.dx ?? 0,
+        top: (offset?.dy ?? 0) + (size?.height ?? 0),
+        width: size?.width ?? 200,
+        child: Material(
+          elevation: 4,
+          borderRadius: BorderRadius.circular(12),
           child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(selectedItem ?? ''),
-                const Icon(Icons.keyboard_arrow_down),
-              ],
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: widget.items.map((item) {
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedItem = item;
+                    });
+                    _removeOverlay();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 16),
+                    width: double.infinity,
+                    child: Text(item),
+                  ),
+                );
+              }).toList(),
             ),
           ),
         ),
-        if (showOptions)
-          Positioned(
-            top: _offset.dy + 48, // 下にずらす
-            left: _offset.dx,
-            width: _width,
-            child: Material(
-              elevation: 4,
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: widget.items.map((item) {
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedItem = item;
-                          showOptions = false;
-                        });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 16),
-                        width: double.infinity,
-                        child: Text(item),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
-          ),
-      ],
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
+  void _toggleDropdown() {
+    if (_overlayEntry == null) {
+      _showOverlay();
+    } else {
+      _removeOverlay();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      key: _key,
+      onTap: _toggleDropdown,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(selectedItem ?? ''),
+            const Icon(Icons.keyboard_arrow_down, color: Colors.black),
+          ],
+        ),
+      ),
     );
   }
 }
