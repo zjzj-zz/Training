@@ -41,3 +41,56 @@ class CommonDropdown<T> extends StatelessWidget {
     );
   }
 }
+
+
+import 'package:flutter/material.dart';
+
+class CommonDropdown<T> extends StatelessWidget {
+  final T value;
+  final List<T> items;
+  final ValueChanged<T?> onChanged;
+  final String Function(T) itemLabel;
+  final double? width; // 追加：幅指定可能に
+  final Color iconColor; // 追加：アイコン色指定
+
+  const CommonDropdown({
+    super.key,
+    required this.value,
+    required this.items,
+    required this.onChanged,
+    required this.itemLabel,
+    this.width,
+    this.iconColor = Colors.black,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width, // 幅指定（nullなら画面幅いっぱい）
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<T>(
+            isExpanded: true,
+            value: value,
+            icon: Icon(Icons.keyboard_arrow_down, color: iconColor),
+            iconEnabledColor: iconColor,
+            borderRadius: BorderRadius.circular(12),
+            dropdownColor: Colors.grey[200],
+            onChanged: onChanged,
+            items: items.map((T item) {
+              return DropdownMenuItem<T>(
+                value: item,
+                child: Text(itemLabel(item)),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+}
