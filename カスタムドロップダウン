@@ -1,0 +1,77 @@
+class CustomDropdown extends StatefulWidget {
+  final List<String> items;
+
+  const CustomDropdown({super.key, required this.items});
+
+  @override
+  State<CustomDropdown> createState() => _CustomDropdownState();
+}
+
+class _CustomDropdownState extends State<CustomDropdown> {
+  String? selectedItem;
+  bool showOptions = false;
+
+  @override
+  void initState() {
+    selectedItem = widget.items.first;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              showOptions = !showOptions;
+            });
+          },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(selectedItem ?? ''),
+                Icon(showOptions
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down),
+              ],
+            ),
+          ),
+        ),
+        if (showOptions)
+          Column(
+            children: widget.items.map((item) {
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedItem = item;
+                    showOptions = false;
+                  });
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 10, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey[300]!),
+                    ),
+                  ),
+                  child: Text(item),
+                ),
+              );
+            }).toList(),
+          ),
+      ],
+    );
+  }
+}
