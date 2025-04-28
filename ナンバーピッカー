@@ -73,3 +73,111 @@ class _NumberPickerState extends State<NumberPicker> {
     );
   }
 }
+
+
+
+import 'package:flutter/material.dart';
+
+class NumberPicker extends StatefulWidget {
+  final int minValue;
+  final int maxValue;
+  final int initialValue;
+  final ValueChanged<int> onChanged;
+
+  const NumberPicker({
+    super.key,
+    this.minValue = 0,
+    this.maxValue = 100,
+    this.initialValue = 50,
+    required this.onChanged,
+  });
+
+  @override
+  _NumberPickerState createState() => _NumberPickerState();
+}
+
+class _NumberPickerState extends State<NumberPicker> {
+  late int _currentValue;
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentValue = widget.initialValue;
+    _controller = TextEditingController(text: _currentValue.toString());
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _updateValue(int newValue) {
+    setState(() {
+      _currentValue = newValue;
+      _controller.text = _currentValue.toString();
+    });
+    widget.onChanged(_currentValue);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity, // 横幅いっぱい
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.grey[200], // グレー背景
+        borderRadius: BorderRadius.circular(12), // 角丸
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // 左のマイナスボタン
+          IconButton(
+            icon: const Icon(Icons.remove, color: Colors.red), // アイコン赤くした版
+            onPressed: () {
+              if (_currentValue > widget.minValue) {
+                _updateValue(_currentValue - 1);
+              }
+            },
+          ),
+          // 中央の数字入力欄
+          SizedBox(
+            width: 50, // 幅を固定して見た目を整える
+            child: TextField(
+              controller: _controller,
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                isCollapsed: true, // パディングを最小限に
+              ),
+              style: const TextStyle(fontSize: 18),
+              onSubmitted: (value) {
+                final intValue = int.tryParse(value);
+                if (intValue != null &&
+                    intValue >= widget.minValue &&
+                    intValue <= widget.maxValue) {
+                  _updateValue(intValue);
+                } else {
+                  // 不正な値なら元に戻す
+                  _controller.text = _currentValue.toString();
+                }
+              },
+            ),
+          ),
+          // 右のプラスボタン
+          IconButton(
+            icon: const Icon(Icons.add, color: Colors.red), // アイコン赤くした版
+            onPressed: () {
+              if (_currentValue < widget.maxValue) {
+                _updateValue(_currentValue + 1);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
