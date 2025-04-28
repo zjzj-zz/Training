@@ -1,0 +1,75 @@
+import 'package:flutter/material.dart';
+
+class NumberPicker extends StatefulWidget {
+  final int minValue;
+  final int maxValue;
+  final int initialValue;
+  final ValueChanged<int> onChanged;
+
+  const NumberPicker({
+    super.key,
+    this.minValue = 0,
+    this.maxValue = 100,
+    this.initialValue = 50,
+    required this.onChanged,
+  });
+
+  @override
+  _NumberPickerState createState() => _NumberPickerState();
+}
+
+class _NumberPickerState extends State<NumberPicker> {
+  late int _currentValue;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentValue = widget.initialValue;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity, // 横幅いっぱい
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.grey[200], // グレー背景
+        borderRadius: BorderRadius.circular(12), // 角丸
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // 左のプラスボタン
+          IconButton(
+            icon: const Icon(Icons.remove),
+            onPressed: () {
+              if (_currentValue > widget.minValue) {
+                setState(() {
+                  _currentValue--;
+                });
+                widget.onChanged(_currentValue);
+              }
+            },
+          ),
+          // 中央のテキスト表示
+          Text(
+            '$_currentValue',
+            style: const TextStyle(fontSize: 18),
+          ),
+          // 右のマイナスボタン
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              if (_currentValue < widget.maxValue) {
+                setState(() {
+                  _currentValue++;
+                });
+                widget.onChanged(_currentValue);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
