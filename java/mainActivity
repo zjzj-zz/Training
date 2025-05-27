@@ -1,0 +1,43 @@
+import android.content.Context
+import android.os.Bundle
+import io.flutter.embedding.android.FlutterActivity
+import io.flutter.plugin.common.MethodChannel
+import jp.co.caulis.fraudalert.sdk.FraudAlertSDK
+import jp.co.caulis.fraudalert.sdk.SDKListener
+import java.io.InputStream
+
+class MainActivity : FlutterActivity() {
+    private val CHANNEL = "fraud_alert_sdk"
+
+    override fun configureFlutterEngine(flutterEngine: io.flutter.embedding.engine.FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
+            call, result ->
+            if (call.method == "initializeSdk") {
+                initializeFraudAlertSdk()
+                result.success(null)
+            } else {
+                result.notImplemented()
+            }
+        }
+    }
+
+    private fun initializeFraudAlertSdk() {
+        val context = this
+        try {
+            val inputStream: InputStream = context.assets.open("Fraudalertsdk_Setting.debug.json")
+            FraudAlertSDK.initializeWith(context, inputStream, object : SDKListener {
+                override fun onSuccess(sessionId: String?) {
+                    println("FraudAlert initialized with SessionID: $sessionId")
+                }
+
+                override fun onError(e: Exception?) {
+                    println("FraudAlert initialization error: ${e?.message}")
+                }
+            })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+}
