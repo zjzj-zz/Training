@@ -1,0 +1,92 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:uuid/uuid.dart';
+
+class UploadScreen extends StatefulWidget {
+  const UploadScreen({super.key});
+
+  @override
+  State<UploadScreen> createState() => _UploadScreenState();
+}
+
+class _UploadScreenState extends State<UploadScreen> {
+  File? _image;
+  Position? _position;
+  final TextEditingController _memoController = TextEditingController();
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.camera);
+    if (picked != null) {
+      setState(() => _image = File(picked.path));
+    }
+  }
+
+  Future<void> _getLocation() async {
+    final permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.deniedForever ||
+        permission == LocationPermission.denied) {
+      return;
+    }
+    final pos = await Geolocator.getCurrentPosition();
+    setState(() => _position = pos);
+  }
+
+  void _saveRecord() {
+    if (_image == null || _position == null) return;
+    final newId = const Uuid().v4();
+    print("保存完了: $newId");
+    Navigator.pop(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getLocation();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('写真登録')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            _image == null
+                ? const Placeholder(fallbackHeight: 150)
+                : Image.file(_image!, height: 150),
+            const SizedBox(height: 8),
+            ElevatedButton.icon(
+              onPressed: _pickImage,
+              icon: const Icon(Icons.camera),
+              label: const Text('写真を撮影'),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _memoController,
+              decoration: const InputDecoration(
+                labelText: 'メモ（任意）',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _position != null
+                  ? '位置情報: ${_position!.latitude}, ${_position!.longitude}'
+                  : '位置情報取得中...',
+            ),
+            const Spacer(),
+            ElevatedButton.icon(
+              onPressed: _saveRecord,
+              icon: const Icon(Icons.save),
+              label: const Text('保存'),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
